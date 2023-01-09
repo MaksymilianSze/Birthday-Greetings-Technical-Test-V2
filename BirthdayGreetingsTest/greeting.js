@@ -29,11 +29,11 @@ function sendGreeting(birthdayFriends, service) {
 
 function getTodaysFormattedDate() {
   const today = new Date();
-  return `2023/02/29`; // Format the date so that it matches the format used in the csv and return it
+  return `${today.getFullYear()}/${today.getMonth() + 1}/${today.getDate()}`; // Format the date so that it matches the format used in the csv and return it
 }
 
-function checkForLeapDay(friends, birthday) {
-  const today = birthday ?? getTodaysFormattedDate(); // Use the specified date or use today's date if no date is passed
+function getBirthdayFriends(friends) {
+  const today = getTodaysFormattedDate();
   if (today.split("/").slice(1).join("/") === "02/28") {
     // Check if today is Feb 28th and if it is, check if any of the friends have a birthday on Feb 29th
     return friends.filter((friend) => {
@@ -46,17 +46,23 @@ function checkForLeapDay(friends, birthday) {
     // If today is Feb 29th we don't want to send any greetings because then we would be sending a birthday greeting twice
     return [];
   }
-  return friends;
+  return friends.filter((friend) => friend.dateOfBirth === today); // Filter the array of friends and return only the friends with a birthday today
 }
 
-function getBirthdayFriends(friends) {
-  const leapFriends = checkForLeapDay(friends);
-  if (leapFriends.length > 0) {
-    console.log(leapFriends);
-    return leapFriends;
+function checkLeapDay(friends, birthday) {
+  if (birthday.split("/").slice(1).join("/") === "02/28") {
+    // Check if today is Feb 28th and if it is, check if any of the friends have a birthday on Feb 29th
+    return friends.filter((friend) => {
+      if (friend.dateOfBirth.split("/").slice(1).join("/") === "02/29") {
+        return friend;
+      }
+      return friend.dateOfBirth === birthday;
+    });
+  } else if (birthday.split("/").slice(1).join("/") === "02/29") {
+    // If today is Feb 29th we don't want to send any greetings because then we would be sending a birthday greeting twice
+    return [];
   }
-  const today = getTodaysFormattedDate();
-  return friends.filter((friend) => friend.dateOfBirth === today); // Filter the array of friends and return only the friends with a birthday today
+  return friends;
 }
 
 function retrieveAllBirthdaysFromCSV() {
@@ -103,7 +109,7 @@ async function retrieveAllBirthdaysFromDB() {
 function retrieveBirthdaysFromDB(birthday) {
   // Because we are using a database we could only retrieve the birthdays of the friends that have a birthday today so we don't have to filter the array like we did with the CSV
   return new Promise((resolve, reject) => {
-    const friends = [];
+    let friends = [];
     db.each(
       `SELECT last_name, first_name, date_of_birth, email FROM friends WHERE substr(date_of_birth, 6) = ?`, // Compare only the month and day part
       birthday,
@@ -123,6 +129,7 @@ function retrieveBirthdaysFromDB(birthday) {
         if (err) {
           reject(err);
         } else {
+          friends = checkLeapDay(friends, birthday);
           resolve(friends);
         }
       }
@@ -131,13 +138,8 @@ function retrieveBirthdaysFromDB(birthday) {
 }
 
 sendGreeting(getBirthdayFriends(retrieveAllBirthdaysFromCSV()), "email"); // Will do nothing unless it is someone's birthday
-// sendGreeting(getBirthdayFriends(await retrieveAllBirthdaysFromDB()), "email"); // Will do nothing unless it is someone's birthday
-
-// const day = "2023/10/08"; // Change this to use a specific day
-// sendGreeting(
-//   checkForLeapDay(
-//     await retrieveBirthdaysFromDB(day.split("/").slice(1).join("/")),
-//     day
-//   ),
-//   "email"
-// ); // Specify the date and it will send a greeting if there are any birthdays on that date
+sendGreeting(getBirthdayFriends(await retrieveAllBirthdaysFromDB()), "email"); // Will do nothing unless it is someone's birthday
+sendGreeting(
+  await retrieveBirthdaysFromDB("1975/09/11".split("/").slice(1).join("/")),
+  "email"
+); // Specify the date and it will send a greeting if there are any birthdays on that date
