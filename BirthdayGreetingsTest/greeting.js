@@ -2,15 +2,14 @@ import { readFileSync } from "fs";
 import sqlite3 from "sqlite3";
 const db = new sqlite3.Database("birthdays.db");
 
-function useEmailService(email, subject, body) {
+export function useEmailService(email, subject, body) {
   // TODO: Send email using email service
 }
-
-function useSMSService(phoneNumber, body) {
+export function useSMSService(phoneNumber, body) {
   // TODO: Send sms using sms service
 }
 
-function sendGreeting(birthdayFriends, service) {
+export function sendGreeting(birthdayFriends, service) {
   const subject = "Happy birthday!";
   for (const friend of birthdayFriends) {
     // Loop through the array of friends with a birthday and send an email to each friend
@@ -27,12 +26,12 @@ function sendGreeting(birthdayFriends, service) {
   }
 }
 
-function getTodaysFormattedDate() {
+export function getTodaysFormattedDate() {
   const today = new Date();
   return `${today.getFullYear()}/${today.getMonth() + 1}/${today.getDate()}`; // Format the date so that it matches the format used in the csv and return it
 }
 
-function getBirthdayFriends(friends) {
+export function getBirthdayFriends(friends) {
   const today = getTodaysFormattedDate();
   if (today.split("/").slice(1).join("/") === "02/28") {
     // Check if today is Feb 28th and if it is, check if any of the friends have a birthday on Feb 29th
@@ -49,7 +48,7 @@ function getBirthdayFriends(friends) {
   return friends.filter((friend) => friend.dateOfBirth === today); // Filter the array of friends and return only the friends with a birthday today
 }
 
-function checkLeapDay(friends, birthday) {
+export function checkLeapDay(friends, birthday) {
   if (birthday.split("/").slice(1).join("/") === "02/28") {
     // Check if today is Feb 28th and if it is, check if any of the friends have a birthday on Feb 29th
     return friends.filter((friend) => {
@@ -65,7 +64,7 @@ function checkLeapDay(friends, birthday) {
   return friends;
 }
 
-function retrieveAllBirthdaysFromCSV() {
+export function retrieveAllBirthdaysFromCSV() {
   return readFileSync("birthdays.csv", "utf8")
     .split("\n")
     .slice(1)
@@ -77,7 +76,7 @@ function retrieveAllBirthdaysFromCSV() {
     });
 }
 
-async function retrieveAllBirthdaysFromDB() {
+export async function retrieveAllBirthdaysFromDB() {
   // Get all of the friends from the database so that we can use the previous functions to find which have a birthday today
   return new Promise((resolve, reject) => {
     const friends = [];
@@ -106,7 +105,7 @@ async function retrieveAllBirthdaysFromDB() {
   });
 }
 
-function retrieveBirthdaysFromDB(birthday) {
+export function retrieveBirthdaysFromDB(birthday) {
   // Because we are using a database we could only retrieve the birthdays of the friends that have a birthday today so we don't have to filter the array like we did with the CSV
   return new Promise((resolve, reject) => {
     let friends = [];
@@ -136,10 +135,3 @@ function retrieveBirthdaysFromDB(birthday) {
     );
   });
 }
-
-sendGreeting(getBirthdayFriends(retrieveAllBirthdaysFromCSV()), "email"); // Will do nothing unless it is someone's birthday
-sendGreeting(getBirthdayFriends(await retrieveAllBirthdaysFromDB()), "email"); // Will do nothing unless it is someone's birthday
-sendGreeting(
-  await retrieveBirthdaysFromDB("1975/09/11".split("/").slice(1).join("/")),
-  "email"
-); // Specify the date and it will send a greeting if there are any birthdays on that date
