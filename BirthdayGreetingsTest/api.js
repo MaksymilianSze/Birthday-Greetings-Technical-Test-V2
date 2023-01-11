@@ -19,12 +19,18 @@ app.get("/birthdays/:date", (req, res) => {
     });
 });
 
-app.get("/birthdays/send-greeting/:date", (req, res) => {
+app.post("/birthdays/send-greeting/:date", (req, res) => {
   // Send a greeting to all friends that have a birthday on the specified date
   const date = req.params.date;
   retrieveBirthdaysFromDB(date)
     .then((friends) => {
-      res.send(friends);
+      sendGreeting(friends, "email")
+        .then((result) => {
+          res.send(result);
+        })
+        .catch((err) => {
+          res.status(500).send(err);
+        });
     })
     .catch((err) => {
       res.status(500).send(err);
