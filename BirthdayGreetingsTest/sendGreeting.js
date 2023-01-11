@@ -14,6 +14,7 @@ export function sendGreeting(birthdayFriends, service) {
       "The service parameter must be a string that is either 'email' or 'sms'."
     );
   }
+  console.log(birthdayFriends);
   if (birthdayFriends.length < 1) {
     throw new Error(
       "There must be atleast one friend with a birthday to send a greeting."
