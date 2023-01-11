@@ -25,6 +25,13 @@ app.get("/birthdays/:date", (req, res) => {
     });
 });
 
+app.get("/send-greeting", async (req, res) => {
+  sendGreeting(getBirthdayFriends(await retrieveAllBirthdaysFromDB()), "email")
+    ?.length
+    ? res.send({ message: "Greeting sent successfully" })
+    : res.send({ message: "No birthdays today" });
+});
+
 app.get("/url", (req, res, next) => {
   res.json(["Tony", "Lisa", "Michael", "Ginger", "Food"]);
 });
