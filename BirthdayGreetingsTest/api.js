@@ -7,7 +7,7 @@ import express from "express";
 const app = express();
 const port = 3000;
 
-app.get("/birthdays/:date", (req, res) => {
+app.get("/birthdays/:date", async (req, res) => {
   // Get all friend objects that have a birthday on the specified date
   const date = req.params.date;
   retrieveBirthdaysFromDB(date)
@@ -24,12 +24,15 @@ app.post("/birthdays/send-greeting/:date", (req, res) => {
   const date = req.params.date;
   retrieveBirthdaysFromDB(date)
     .then((friends) => {
-      sendGreeting(friends, "email")
+      sendGreeting(friends, "ema")
         .then((result) => {
           res.send(result);
         })
         .catch((err) => {
-          res.status(500).send(err);
+          console.log(
+            "The service parameter must be a string that is either 'email' or 'sms'."
+          );
+          res.status(400).send(err);
         });
     })
     .catch((err) => {

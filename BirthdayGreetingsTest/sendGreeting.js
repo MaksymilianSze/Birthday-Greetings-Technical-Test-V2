@@ -6,18 +6,16 @@ function useSMSService(phoneNumber, body) {
   // TODO: Send sms using sms service
 }
 
-const subject = "Happy birthday!";
-
 export function sendGreeting(birthdayFriends, service) {
-  return new Promise((resolve) => {
+  return new Promise((resolve, reject) => {
     if (service !== "email" && service !== "sms") {
-      throw new Error(
+      reject(
         "The service parameter must be a string that is either 'email' or 'sms'."
       );
     }
     console.log(birthdayFriends);
     if (birthdayFriends.length < 1) {
-      throw new Error(
+      reject(
         "There must be atleast one friend with a birthday to send a greeting."
       );
     }
@@ -25,9 +23,9 @@ export function sendGreeting(birthdayFriends, service) {
       // Loop through the array of friends with a birthday and send an email to each friend
       const body = `Happy birthday, dear ${friend.firstName}!`;
       if (service === "email") {
-        useEmailService(friend.email, subject, body);
+        useEmailService(friend.email, "Happy birthday", body);
         console.log(
-          `Sending email to ${friend.email} with subject: ${subject} and body: ${body}`
+          `Sending email to ${friend.email} with subject: Happy birthday! and body: ${body}`
         );
       } else if (service === "sms") {
         useSMSService(friend.phoneNumber, body);
