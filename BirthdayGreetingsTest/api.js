@@ -1,6 +1,7 @@
 import { retrieveBirthdaysFromDB } from "./retrieveBirthdaysFromDB.js";
 import { retrieveBirthdaysFromCSV } from "./retrieveBirthdaysFromCSV.js";
 import { addNewBirthdayFriendToDB } from "./addNewBirthdayFriendToDB.js";
+import { deleteBirthdayFriendFromDB } from "./deleteBirthdayFriendFromDB.js";
 import { sendGreeting } from "./sendGreeting.js";
 
 import express from "express";
@@ -45,10 +46,25 @@ app.post("/birthdays/send-greeting/:date/:service", (req, res) => {
 
 app.put("/birthdays/add-friend", (req, res) => {
   const { lastName, firstName, dateOfBirth, email } = req.body;
-
   addNewBirthdayFriendToDB(lastName, firstName, dateOfBirth, email)
     .then((result) => {
       res.status(200).send(result);
+    })
+    .catch((err) => {
+      res.status(500).send(err);
+    });
+});
+
+app.delete("/birthdays/delete-friend/:email", (req, res) => {
+  const email = req.params.email;
+
+  deleteBirthdayFriendFromDB(email)
+    .then(() => {
+      res
+        .status(200)
+        .send(
+          `Successfully deleted friend with email ${email} from the database`
+        );
     })
     .catch((err) => {
       res.status(500).send(err);
