@@ -59,12 +59,8 @@ app.delete("/birthdays/delete-friend/:email", (req, res) => {
   const email = req.params.email;
 
   deleteBirthdayFriendFromDB(email)
-    .then(() => {
-      res
-        .status(200)
-        .send(
-          `Successfully deleted friend with email ${email} from the database`
-        );
+    .then((result) => {
+      res.status(200).send(result);
     })
     .catch((err) => {
       res.status(500).send(err);

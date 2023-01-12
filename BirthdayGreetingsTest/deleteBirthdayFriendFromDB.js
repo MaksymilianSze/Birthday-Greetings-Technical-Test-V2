@@ -21,13 +21,17 @@ export function deleteBirthdayFriendFromDB(email) {
 
   return new Promise((resolve, reject) => {
     try {
-      db.run(`DELETE FROM friends WHERE email = ?`, [email], (error) => {
-        if (error) {
-          reject(error);
+      db.run(`DELETE FROM friends WHERE email = ?`, [email], function (err) {
+        if (err) {
+          reject(err);
         }
         console.log(
-          `Friend with email: ${email} successfully deleted from the database.`
+          `Friend with email ${email} has been deleted from the database`
         );
+        if (!this.changes) {
+          console.log(`No friend found with the email: ${email}`);
+          reject(`No friend found with the email: ${email}`);
+        }
         resolve("Friend successfully deleted from the database.");
       });
     } catch (error) {
