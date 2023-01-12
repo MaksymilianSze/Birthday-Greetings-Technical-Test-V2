@@ -38,13 +38,15 @@ export function retrieveBirthdaysWithinRangeFromDB(startDate, endDate) {
           if (error) {
             reject(error);
           }
+          if (!rows.length) {
+            console.log(
+              `No friends with birthdays between ${startDate} and ${endDate}`
+            );
+            reject("No friends with birthdays between the specified dates");
+          }
+
           console.log(
-            `Retrieved ${
-              rows.length
-            } friend(s) with birthday(s) between ${startDate
-              .split("/")
-              .slice(1)
-              .join("/")} and ${endDate.split("/").slice(1).join("/")}`
+            `Retrieved ${rows.length} friend(s) with birthday(s) between ${startDate} and ${endDate}`
           );
           resolve(rows);
         }
