@@ -2,6 +2,7 @@ import { retrieveBirthdaysFromDB } from "./retrieveBirthdaysFromDB.js";
 import { retrieveBirthdaysFromCSV } from "./retrieveBirthdaysFromCSV.js";
 import { addNewBirthdayFriendToDB } from "./addNewBirthdayFriendToDB.js";
 import { deleteBirthdayFriendFromDB } from "./deleteBirthdayFriendFromDB.js";
+import { retrieveBirthdaysWithinRangeFromDB } from "./retrieveBirthdaysWithinRangeFromDB.js";
 import { sendGreeting } from "./sendGreeting.js";
 
 import express from "express";
@@ -14,6 +15,19 @@ app.get("/birthdays/:date", async (req, res) => {
   // Get all friend objects that have a birthday on the specified date
   const date = req.params.date;
   retrieveBirthdaysFromDB(date)
+    .then((friends) => {
+      res.send(friends);
+    })
+    .catch((err) => {
+      res.status(500).send(err);
+    });
+});
+
+app.get("/birthdays/range/:startDate/:endDate", async (req, res) => {
+  // Get all friend objects that have a birthday within the specified range
+  const startDate = req.params.startDate;
+  const endDate = req.params.endDate;
+  retrieveBirthdaysWithinRangeFromDB(startDate, endDate)
     .then((friends) => {
       res.send(friends);
     })
@@ -45,6 +59,7 @@ app.post("/birthdays/send-greeting/:date/:service", (req, res) => {
 });
 
 app.put("/birthdays/add-friend", (req, res) => {
+  // Add a new friend to the database
   const { lastName, firstName, dateOfBirth, email } = req.body;
   addNewBirthdayFriendToDB(lastName, firstName, dateOfBirth, email)
     .then((result) => {
@@ -56,8 +71,8 @@ app.put("/birthdays/add-friend", (req, res) => {
 });
 
 app.delete("/birthdays/delete-friend/:email", (req, res) => {
+  // Delete a friend from the database
   const email = req.params.email;
-
   deleteBirthdayFriendFromDB(email)
     .then((result) => {
       res.status(200).send(result);
