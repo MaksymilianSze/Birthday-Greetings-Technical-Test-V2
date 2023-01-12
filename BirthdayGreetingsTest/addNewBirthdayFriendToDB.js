@@ -7,7 +7,6 @@ export function addNewBirthdayFriendToDB(
   dateOfBirth,
   email
 ) {
-  console.log(lastName, firstName, dateOfBirth, email);
   // Validate the input
   if (!lastName || !firstName || !email || !dateOfBirth) {
     throw new Error("Missing required fields");
@@ -53,17 +52,33 @@ export function addNewBirthdayFriendToDB(
 
   return new Promise((resolve, reject) => {
     try {
-      db.run(
-        `INSERT INTO friends (last_name, first_name, date_of_birth, email) VALUES (?, ?, ?, ?)`,
-        [lastName, firstName, dateOfBirth, email],
-        (error) => {
+      db.get(
+        `SELECT * FROM friends WHERE email = ?`,
+        [email],
+        (error, friend) => {
           if (error) {
             reject(error);
           }
-          console.log(
-            `A row has been inserted with values: ${lastName}, ${firstName}, ${dateOfBirth}, ${email}`
-          );
-          resolve("Friend successfully added to the database.");
+          if (friend) {
+            console.log(`A friend with email ${email} already exists`);
+            reject(
+              `A friend with email ${email} already exists in the database`
+            );
+          } else {
+            db.run(
+              `INSERT INTO friends (last_name, first_name, date_of_birth, email) VALUES (?, ?, ?, ?)`,
+              [lastName, firstName, dateOfBirth, email],
+              (error) => {
+                if (error) {
+                  reject(error);
+                }
+                console.log(
+                  `A row has been inserted with values: ${lastName}, ${firstName}, ${dateOfBirth}, ${email}`
+                );
+                resolve("Friend successfully added to the database.");
+              }
+            );
+          }
         }
       );
     } catch (error) {
