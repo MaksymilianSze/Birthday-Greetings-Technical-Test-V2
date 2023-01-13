@@ -3,6 +3,7 @@ import { retrieveBirthdaysFromCSV } from "./retrieveBirthdaysFromCSV.js";
 import { addNewBirthdayFriendToDB } from "./addNewBirthdayFriendToDB.js";
 import { deleteBirthdayFriendFromDB } from "./deleteBirthdayFriendFromDB.js";
 import { retrieveBirthdaysWithinRangeFromDB } from "./retrieveBirthdaysWithinRangeFromDB.js";
+import { updateBirthdayFriendInDB } from "./updateBirthdayFriendInDB.js";
 import { sendGreeting } from "./sendGreeting.js";
 
 import express from "express";
@@ -74,6 +75,19 @@ app.delete("/birthdays/delete-friend/:email", (req, res) => {
   // Delete a friend from the database
   const email = req.params.email;
   deleteBirthdayFriendFromDB(email)
+    .then((result) => {
+      res.status(200).send(result);
+    })
+    .catch((err) => {
+      res.status(500).send(err);
+    });
+});
+
+app.patch("/birthdays/update-friend/:email", (req, res) => {
+  // Update a friend's information in the database
+  const { lastName, firstName, dateOfBirth, email } = req.body;
+  const searchEmail = req.params.email;
+  updateBirthdayFriendInDB(lastName, firstName, dateOfBirth, email, searchEmail)
     .then((result) => {
       res.status(200).send(result);
     })
