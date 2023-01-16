@@ -1,8 +1,16 @@
 import sqlite3 from "sqlite3";
 
 export function deleteBirthdayFriendFromDB(email) {
-  if (!email) {
-    throw new Error("Missing required field: email");
+  try {
+    if (!email) {
+      throw new Error("Missing required field: email");
+    }
+  } catch (error) {
+    console.log(`Missing required field: email.`);
+    reject({
+      status: 400,
+      message: `Missing required field: email.`,
+    });
   }
 
   const db = new sqlite3.Database(
@@ -30,12 +38,18 @@ export function deleteBirthdayFriendFromDB(email) {
         );
         if (!this.changes) {
           console.log(`No friend found with the email: ${email}`);
-          reject(`No friend found with the email: ${email}`);
+          reject({
+            status: 404,
+            message: `No friend found with the email: ${email}`,
+          });
         }
         resolve("Friend successfully deleted from the database.");
       });
     } catch (error) {
-      reject(error);
+      reject({
+        stauts: 500,
+        message: "Internal server error",
+      });
     }
   });
 }

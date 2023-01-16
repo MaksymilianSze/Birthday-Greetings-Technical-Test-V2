@@ -12,35 +12,33 @@ const app = express();
 const port = 3000;
 app.use(express.json());
 
-app.get("/birthdays/:date", async (req, res) => {
-  // Get all friend objects that have a birthday on the specified date
-  const date = req.params.date;
-  retrieveBirthdaysFromDB(date)
-    .then((friends) => {
-      res.send(friends);
-    })
-    .catch((err) => {
-      res.status(500).send(err);
-    });
+app.get("/birthdays", async (req, res) => {
+  const { startDate, endDate } = req.query;
+  if (startDate && endDate) {
+    // Get all friend objects that have a birthday within the specified range
+    retrieveBirthdaysWithinRangeFromDB(startDate, endDate)
+      .then((friends) => {
+        res.status(200).send(friends);
+      })
+      .catch((err) => {
+        res.status(err.status).send(err);
+      });
+  } else {
+    // Get all friend objects that have a birthday on the specified date
+    const date = req.query.date;
+    retrieveBirthdaysFromDB(date)
+      .then((friends) => {
+        res.status(200).send(friends);
+      })
+      .catch((err) => {
+        res.status(err.status).send(err);
+      });
+  }
 });
 
-app.get("/birthdays/range/:startDate/:endDate", async (req, res) => {
-  // Get all friend objects that have a birthday within the specified range
-  const startDate = req.params.startDate;
-  const endDate = req.params.endDate;
-  retrieveBirthdaysWithinRangeFromDB(startDate, endDate)
-    .then((friends) => {
-      res.send(friends);
-    })
-    .catch((err) => {
-      res.status(500).send(err);
-    });
-});
-
-app.post("/birthdays/send-greeting/:date/:service", (req, res) => {
+app.post("/birthdays/send-greetings", (req, res) => {
   // Send a greeting to all friends that have a birthday on the specified date
-  const date = req.params.date;
-  const service = req.params.service;
+  const { date, service } = req.body;
   retrieveBirthdaysFromDB(date)
     .then((friends) => {
       sendGreeting(friends, service)
@@ -48,14 +46,11 @@ app.post("/birthdays/send-greeting/:date/:service", (req, res) => {
           res.send(result);
         })
         .catch((err) => {
-          console.log(
-            "The service parameter must be a string that is either 'email' or 'sms'."
-          );
-          res.status(400).send(err);
+          res.status(err.status).send(err);
         });
     })
     .catch((err) => {
-      res.status(500).send(err);
+      res.status(err.status).send(err);
     });
 });
 
@@ -64,22 +59,22 @@ app.put("/birthdays/add-friend", (req, res) => {
   const { lastName, firstName, dateOfBirth, email } = req.body;
   addNewBirthdayFriendToDB(lastName, firstName, dateOfBirth, email)
     .then((result) => {
-      res.status(200).send(result);
+      res.status(201).send(result);
     })
     .catch((err) => {
-      res.status(500).send(err);
+      res.status(err.status).send(err);
     });
 });
 
-app.delete("/birthdays/delete-friend/:email", (req, res) => {
+app.delete("/birthdays/delete-friend", (req, res) => {
   // Delete a friend from the database
-  const email = req.params.email;
+  const { email } = req.body;
   deleteBirthdayFriendFromDB(email)
     .then((result) => {
       res.status(200).send(result);
     })
     .catch((err) => {
-      res.status(500).send(err);
+      res.status(err.status).send(err);
     });
 });
 
@@ -89,10 +84,10 @@ app.patch("/birthdays/update-friend/:email", (req, res) => {
   const searchEmail = req.params.email;
   updateBirthdayFriendInDB(lastName, firstName, dateOfBirth, email, searchEmail)
     .then((result) => {
-      res.status(200).send(result);
+      res.status(204).send(result);
     })
     .catch((err) => {
-      res.status(500).send(err);
+      res.status(err.status).send(err);
     });
 });
 

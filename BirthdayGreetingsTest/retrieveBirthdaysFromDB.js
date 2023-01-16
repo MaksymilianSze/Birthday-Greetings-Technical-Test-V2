@@ -1,9 +1,12 @@
 import sqlite3 from "sqlite3";
 import { convertDate } from "./convertDate.js";
 
-export function retrieveBirthdaysFromDB(date) {
-  date = convertDate(date); // Convert the date to the correct format
+const leap = "02/29";
+const twentyEighth = "02/28";
 
+export async function retrieveBirthdaysFromDB(date) {
+  date = await convertDate(date); // Convert the date to the correct format
+  console.log(date);
   const db = new sqlite3.Database(
     "birthdays.db",
     sqlite3.OPEN_READONLY,
@@ -20,8 +23,7 @@ export function retrieveBirthdaysFromDB(date) {
 
   date = date.split("/").slice(1).join("/"); // Remove the year from the date
   const friends = [];
-  if (date === "02/28") {
-    const leap = "02/29";
+  if (date === twentyEighth) {
     return new Promise((resolve, reject) => {
       try {
         db.each(
@@ -44,10 +46,18 @@ export function retrieveBirthdaysFromDB(date) {
             if (error) {
               reject(error);
             } else {
-              console.log(
-                `Found ${friends.length} friend(s) with birthday(s) on ${date}`
-              );
-              resolve(friends);
+              if (friends.length === 0) {
+                console.log(`No friends found with the birthday ${date}.`);
+                reject({
+                  status: 404,
+                  message: `No friends found with the birthday ${date}.`,
+                });
+              } else {
+                console.log(
+                  `Found ${friends.length} friend(s) with birthday(s) on ${date}`
+                );
+                resolve(friends);
+              }
             }
           }
         );
@@ -55,8 +65,13 @@ export function retrieveBirthdaysFromDB(date) {
         reject(error);
       }
     });
-  } else if (date === "02/29") {
-    return [];
+  } else if (date === leap) {
+    console.log(`No friends found with the birthday ${date}.`);
+    reject({
+      status: 404,
+      message:
+        "If a birthday falls on February 29, greetings will always be sent on February 28.",
+    });
   } else {
     return new Promise((resolve, reject) => {
       let friends = [];
@@ -80,10 +95,18 @@ export function retrieveBirthdaysFromDB(date) {
             if (error) {
               reject(error);
             } else {
-              console.log(
-                `Found ${friends.length} friend(s) with birthday(s) on ${date}`
-              );
-              resolve(friends);
+              if (friends.length === 0) {
+                console.log(`No friends found with the birthday ${date}.`);
+                reject({
+                  status: 404,
+                  message: `No friends found with the birthday ${date}.`,
+                });
+              } else {
+                console.log(
+                  `Found ${friends.length} friend(s) with birthday(s) on ${date}`
+                );
+                resolve(friends);
+              }
             }
           }
         );

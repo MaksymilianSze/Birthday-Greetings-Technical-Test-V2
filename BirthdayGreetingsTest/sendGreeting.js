@@ -9,15 +9,18 @@ function useSMSService(phoneNumber, body) {
 export function sendGreeting(birthdayFriends, service) {
   return new Promise((resolve, reject) => {
     if (service !== "email" && service !== "sms") {
-      reject(
-        "The service parameter must be a string that is either 'email' or 'sms'."
-      );
+      reject({
+        status: 400,
+        message:
+          "The service parameter must be a string that is either 'email' or 'sms'.",
+      });
     }
     console.log(birthdayFriends);
     if (birthdayFriends.length < 1) {
-      reject(
-        "There must be atleast one friend with a birthday to send a greeting."
-      );
+      reject({
+        status: 404,
+        message: "No friends with a birthday on the specified date were found.",
+      });
     }
     for (const friend of birthdayFriends) {
       // Loop through the array of friends with a birthday and send an email to each friend
