@@ -12,7 +12,7 @@ const app = express();
 const port = 3000;
 app.use(express.json());
 
-app.get("/birthdays", async (req, res) => {
+app.get("/friends", async (req, res) => {
   const { startDate, endDate } = req.query;
   if (startDate && endDate) {
     // Get all friend objects that have a birthday within the specified range
@@ -23,20 +23,21 @@ app.get("/birthdays", async (req, res) => {
       .catch((err) => {
         res.status(err.status).send(err);
       });
-  } else {
+  } else if (startDate) {
     // Get all friend objects that have a birthday on the specified date
-    const date = req.query.date;
-    retrieveBirthdaysFromDB(date)
+    retrieveBirthdaysFromDB(startDate)
       .then((friends) => {
         res.status(200).send(friends);
       })
       .catch((err) => {
         res.status(err.status).send(err);
       });
+  } else {
+    res.status(400).send("Missing query parameters.");
   }
 });
 
-app.post("/birthdays/send-greetings", (req, res) => {
+app.post("/friends/greetings", (req, res) => {
   // Send a greeting to all friends that have a birthday on the specified date
   const { date, service } = req.body;
   retrieveBirthdaysFromDB(date)
@@ -54,7 +55,7 @@ app.post("/birthdays/send-greetings", (req, res) => {
     });
 });
 
-app.put("/birthdays/add-friend", (req, res) => {
+app.post("/friends/friend", (req, res) => {
   // Add a new friend to the database
   const { lastName, firstName, dateOfBirth, email } = req.body;
   addNewBirthdayFriendToDB(lastName, firstName, dateOfBirth, email)
@@ -66,9 +67,9 @@ app.put("/birthdays/add-friend", (req, res) => {
     });
 });
 
-app.delete("/birthdays/delete-friend", (req, res) => {
+app.delete("/friends/friend/:email", (req, res) => {
   // Delete a friend from the database
-  const { email } = req.body;
+  const email = params.email;
   deleteBirthdayFriendFromDB(email)
     .then((result) => {
       res.status(200).send(result);
@@ -78,13 +79,13 @@ app.delete("/birthdays/delete-friend", (req, res) => {
     });
 });
 
-app.patch("/birthdays/update-friend/:email", (req, res) => {
+app.patch("/friend/update-friend/:email", (req, res) => {
   // Update a friend's information in the database
   const { lastName, firstName, dateOfBirth, email } = req.body;
   const searchEmail = req.params.email;
   updateBirthdayFriendInDB(lastName, firstName, dateOfBirth, email, searchEmail)
     .then((result) => {
-      res.status(204).send(result);
+      res.status(200).send(result);
     })
     .catch((err) => {
       res.status(err.status).send(err);

@@ -6,7 +6,6 @@ const twentyEighth = "02/28";
 
 export async function retrieveBirthdaysFromDB(date) {
   date = await convertDate(date); // Convert the date to the correct format
-  console.log(date);
   const db = new sqlite3.Database(
     "birthdays.db",
     sqlite3.OPEN_READONLY,
@@ -66,11 +65,13 @@ export async function retrieveBirthdaysFromDB(date) {
       }
     });
   } else if (date === leap) {
-    console.log(`No friends found with the birthday ${date}.`);
-    reject({
-      status: 404,
-      message:
-        "If a birthday falls on February 29, greetings will always be sent on February 28.",
+    return new Promise((resolve, reject) => {
+      console.log(`No friends found with the birthday ${date}.`);
+      reject({
+        status: 404,
+        message:
+          "If a birthday falls on February 29, greetings will always be sent on February 28.",
+      });
     });
   } else {
     return new Promise((resolve, reject) => {

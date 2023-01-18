@@ -1,6 +1,10 @@
 import sqlite3 from "sqlite3";
 import { convertDate } from "./convertDate.js";
 
+function invalidEmail(email) {
+  return !/^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/.test(email);
+}
+
 export async function addNewBirthdayFriendToDB(
   lastName,
   firstName,
@@ -19,7 +23,7 @@ export async function addNewBirthdayFriendToDB(
       throw new Error("Name fields should not be longer than 20 characters");
     }
 
-    if (!/^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/.test(email)) {
+    if (invalidEmail(email)) {
       throw new Error("Invalid email address");
     }
     console.log("Inputs validated");
@@ -27,7 +31,7 @@ export async function addNewBirthdayFriendToDB(
     return new Promise((resolve, reject) => {
       console.log(`Bad input: ${error.message}.`);
       reject({
-        status: 400,
+        status: 422,
         message: `Bad input: ${error.message}.`,
       });
     });
