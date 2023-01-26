@@ -1,1 +1,3 @@
-// TODO: Implement updateBirthdayFriendInDB
+export function updateBirthdayFriendInDB(email) {
+  // TODO: Implement updateBirthdayFriendInDB
+}
