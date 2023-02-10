@@ -24,16 +24,16 @@ export function sendGreeting(birthdayFriends, service) {
     }
     for (const friend of birthdayFriends) {
       // Loop through the array of friends with a birthday and send an email to each friend
-      const body = `Happy birthday, dear ${friend.firstName}!`;
+      const body = `Happy birthday, dear ${friend.first_name}!`;
       if (service === "email") {
         useEmailService(friend.email, "Happy birthday", body);
         console.log(
           `Sending email to ${friend.email} with subject: Happy birthday! and body: ${body}`
         );
       } else if (service === "sms") {
-        useSMSService(friend.phoneNumber, body);
+        useSMSService(friend.phone_number, body);
         console.log(
-          `Sending sms to ${friend.phoneNumber} with body: ${body}. Note: phone numbers haven't been implemented so it will show as undefined`
+          `Sending sms to ${friend.phone_number} with body: ${body}. Note: phone numbers haven't been implemented so it will show as undefined`
         ); // The data provided doesn't have phone numbers but if it did it would be part of the friend object so for now it will be undefined
       }
     }
