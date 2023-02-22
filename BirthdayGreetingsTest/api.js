@@ -6,6 +6,8 @@ import { retrieveBirthdaysWithinRangeFromDB } from "./retrieveBirthdaysWithinRan
 import { updateBirthdayFriendInDB } from "./updateBirthdayFriendInDB.js";
 import { sendGreeting } from "./sendGreeting.js";
 
+import { sequelize } from "./src/database/connection.js";
+
 import { fetchFriendsWithBirthday } from "./fetchFriendsWithBirthday.js";
 
 import express from "express";

@@ -1,5 +1,5 @@
 import { convertDate } from "./convertDate.js";
-import { Friend } from "./models/friends.js";
+import { Friend } from "./src/models/Friend.js";
 import { Op } from "sequelize";
 
 const leap = "02/29";
