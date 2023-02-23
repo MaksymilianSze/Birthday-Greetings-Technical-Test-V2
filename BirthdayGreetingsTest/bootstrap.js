@@ -1,23 +1,14 @@
 import { Friend } from "./src/models/Friend.js";
 
-export async function insertData() {
-  const friends = [
-    {
-      lastName: "Doe",
-      firstName: "John",
-      dateOfBirth: "1982/10/08",
-      email: "doe@gmail.com",
-    },
-    {
-      lastName: "Smith",
-      firstName: "Kenny",
-      dateOfBirth: "1985/02/28",
-      email: "KennyS@gmail.com",
-    },
-  ];
+export const addData = async () => {
   try {
-    await Friend.create(friends);
-  } catch (error) {
-    console.log(error);
+    Friend.create({
+      last_name: "Doe",
+      first_name: "John",
+      date_of_birth: "2021/01/01",
+      email: "Doe@gmail.com",
+    });
+  } catch (err) {
+    console.log(err);
   }
-}
+};

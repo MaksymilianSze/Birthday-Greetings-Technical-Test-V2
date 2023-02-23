@@ -25,8 +25,3 @@ export const Friend = sequelize.define("friend", {
     allowNull: false,
   },
 });
-
-sequelize
-  .sync()
-  .then(() => console.log("table created"))
-  .catch((err) => console.error("Error creating table: ", err));

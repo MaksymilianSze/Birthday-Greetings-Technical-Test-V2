@@ -1,20 +1,22 @@
-import { retrieveBirthdaysFromDB } from "./retrieveBirthdaysFromDB.js";
-import { retrieveBirthdaysFromCSV } from "./retrieveBirthdaysFromCSV.js";
-import { addNewBirthdayFriendToDB } from "./addNewBirthdayFriendToDB.js";
-import { deleteBirthdayFriendFromDB } from "./deleteBirthdayFriendFromDB.js";
-import { retrieveBirthdaysWithinRangeFromDB } from "./retrieveBirthdaysWithinRangeFromDB.js";
-import { updateBirthdayFriendInDB } from "./updateBirthdayFriendInDB.js";
-import { sendGreeting } from "./sendGreeting.js";
+import { retrieveBirthdaysFromDB } from "./src/utils/retrieveBirthdaysFromDB.js";
+import { retrieveBirthdaysFromCSV } from "./src/utils/retrieveBirthdaysFromCSV.js";
+import { addNewBirthdayFriendToDB } from "./src/utils/addNewBirthdayFriendToDB.js";
+import { deleteBirthdayFriendFromDB } from "./src/utils/deleteBirthdayFriendFromDB.js";
+import { retrieveBirthdaysWithinRangeFromDB } from "./src/utils/retrieveBirthdaysWithinRangeFromDB.js";
+import { updateBirthdayFriendInDB } from "./src/utils/updateBirthdayFriendInDB.js";
+import { sendGreeting } from "./src/utils/sendGreeting.js";
 
 import { sequelize } from "./src/database/connection.js";
+import { addData } from "./bootstrap.js";
 
-import { fetchFriendsWithBirthday } from "./fetchFriendsWithBirthday.js";
+import { fetchFriendsWithBirthday } from "./src/utils/fetchFriendsWithBirthday.js";
 
 import express from "express";
 
 const app = express();
 const port = 3000;
 app.use(express.json());
+addData();
 
 app.get("/friends", async (req, res) => {
   const { startDate, endDate } = req.query;
