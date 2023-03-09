@@ -58,7 +58,6 @@ export async function fetchFriendsWithBirthday(date) {
             },
           },
         });
-        logger.info(friends);
         if (friends.length === 0) {
           logger.error(`No friends found with the birthday ${date}.`);
           reject({
