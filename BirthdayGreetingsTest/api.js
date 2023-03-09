@@ -1,8 +1,6 @@
-import { retrieveBirthdaysFromDB } from "./src/utils/retrieveBirthdaysFromDB.js";
-import { retrieveBirthdaysFromCSV } from "./src/utils/retrieveBirthdaysFromCSV.js";
 import { addNewBirthdayFriendToDB } from "./src/utils/addNewBirthdayFriendToDB.js";
 import { deleteBirthdayFriendFromDB } from "./src/utils/deleteBirthdayFriendFromDB.js";
-import { retrieveBirthdaysWithinRangeFromDB } from "./src/utils/retrieveBirthdaysWithinRangeFromDB.js";
+import { fetchFriendsWithBirthdayRange } from "./src/utils/fetchFriendsWithBirthdayRange.js";
 import { updateBirthdayFriendInDB } from "./src/utils/updateBirthdayFriendInDB.js";
 import { sendGreeting } from "./src/utils/sendGreeting.js";
 
@@ -22,7 +20,7 @@ app.get("/friends", async (req, res) => {
   const { startDate, endDate } = req.query;
   if (startDate && endDate) {
     // Get all friend objects that have a birthday within the specified range
-    retrieveBirthdaysWithinRangeFromDB(startDate, endDate)
+    fetchFriendsWithBirthdayRange(startDate, endDate)
       .then((friends) => {
         res.status(200).send(friends);
       })

@@ -1,12 +1,12 @@
+import sqlite3 from "sqlite3";
 import { convertDate } from "./convertDate.js";
-import { Friend } from "../../src/models/Friend.js";
-import { Op } from "sequelize";
-import { Sequelize } from "sequelize";
-import logger from "./logger.js";
 
 const twentyEighth = "28";
 const feb = "02";
 
+/**
+ * @deprecated Use the verison with Sequelize instead
+ */
 export async function retrieveBirthdaysWithinRangeFromDB(startDate, endDate) {
   try {
     // Validate the input
@@ -15,10 +15,10 @@ export async function retrieveBirthdaysWithinRangeFromDB(startDate, endDate) {
     }
   } catch (error) {
     return new Promise((resolve, reject) => {
-      logger.error(error);
+      console.log(error);
       reject({
         status: 400,
-        message: error.message,
+        message: error,
       });
     });
   }
@@ -38,46 +38,49 @@ export async function retrieveBirthdaysWithinRangeFromDB(startDate, endDate) {
   }
   endDate = endDate.join("/");
 
-  return new Promise(async (resolve, reject) => {
-    try {
-      const friends = await Friend.findAll({
-        where: {
-          date_of_birth: {
-            [Op.and]: [
-              Sequelize.where(
-                Sequelize.fn(
-                  "DATE_FORMAT",
-                  Sequelize.col("date_of_birth"),
-                  "%m/%d"
-                ),
-                {
-                  [Op.between]: [startDate, endDate],
-                }
-              ),
-            ],
-          },
-        },
-      });
-      if (!friends.length) {
-        logger.info(
-          `No friends with birthdays between ${startDate} and ${endDate}`
+  const db = new sqlite3.Database(
+    "birthdays.db",
+    sqlite3.OPEN_READONLY,
+    (error) => {
+      if (error) {
+        console.error(
+          `There was an error when trying to connect to the database: ${error}`
         );
-        reject({
-          status: 404,
-          message: "No friends with birthdays between the specified dates",
-        });
-      } else {
-        logger.info(
-          `Retrieved ${friends.length} friend(s) with birthday(s) between ${startDate} and ${endDate}`
-        );
-        resolve(friends);
+        throw error;
       }
+      console.log("Connected to the birthdays database in read mode.");
+    }
+  );
+
+  return new Promise((resolve, reject) => {
+    try {
+      db.all(
+        `SELECT * FROM friends WHERE substr(date_of_birth, 6) BETWEEN ? AND ?`,
+        [startDate, endDate],
+        (error, rows) => {
+          if (error) {
+            reject(error);
+          } else {
+            if (!rows.length) {
+              console.log(
+                `No friends with birthdays between ${startDate} and ${endDate}`
+              );
+              reject({
+                status: 404,
+                message:
+                  "No friends with birthdays between the specified dates",
+              });
+            } else {
+              console.log(
+                `Retrieved ${rows.length} friend(s) with birthday(s) between ${startDate} and ${endDate}`
+              );
+              resolve(rows);
+            }
+          }
+        }
+      );
     } catch (error) {
-      logger.error(error);
-      reject({
-        status: 500,
-        message: `${error.message}`,
-      });
+      reject(error);
     }
   });
 }
