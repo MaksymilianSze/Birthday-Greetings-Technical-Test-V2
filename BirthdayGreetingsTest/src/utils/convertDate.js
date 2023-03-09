@@ -1,3 +1,5 @@
+import logger from "./logger.js";
+
 // Regular expression to match the date format
 const dateRegex = /^(\d{4})-(0[1-9]|1[0-2])-(0[1-9]|[12][0-9]|3[01])$/;
 
@@ -15,6 +17,9 @@ function checkRealDate(date) {
 export function convertDate(date) {
   return new Promise((resolve, reject) => {
     if (!dateRegex.test(date)) {
+      logger.error(
+        `Invalid date format. Expected "yyyy-mm-dd", but got ${date}`
+      );
       reject({
         status: 400,
         message: `Invalid date format. Expected "yyyy-mm-dd", but got ${date}`,
@@ -23,9 +28,10 @@ export function convertDate(date) {
       if (checkRealDate(date)) {
         // Replace - with / and return the new date
         const newDate = date.replace(/-/g, "/");
-        console.log(`Successfully converted ${date} to ${newDate}`);
+        logger.info(`Successfully converted ${date} to ${newDate}`);
         resolve(newDate);
       } else {
+        logger.error(`The date: ${date} is not a valid date`);
         reject({
           status: 400,
           message: `The date: ${date} is not a valid date`,

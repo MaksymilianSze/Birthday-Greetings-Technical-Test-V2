@@ -16,7 +16,7 @@ import express from "express";
 const app = express();
 const port = 3000;
 app.use(express.json());
-addData();
+//addData();
 
 app.get("/friends", async (req, res) => {
   const { startDate, endDate } = req.query;

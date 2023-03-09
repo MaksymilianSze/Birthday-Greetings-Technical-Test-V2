@@ -5,7 +5,7 @@ export const addData = async () => {
     Friend.create({
       last_name: "Doe",
       first_name: "John",
-      date_of_birth: "2021/01/01",
+      date_of_birth: "2020/01/01",
       email: "Doe@gmail.com",
     });
   } catch (err) {
