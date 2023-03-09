@@ -4,6 +4,9 @@ import { convertDate } from "./convertDate.js";
 const leap = "02/29";
 const twentyEighth = "02/28";
 
+/**
+ * @deprecated Use the verison with Sequelize instead
+ */
 export async function retrieveBirthdaysFromDB(date) {
   date = await convertDate(date); // Convert the date to the correct format
   const db = new sqlite3.Database(

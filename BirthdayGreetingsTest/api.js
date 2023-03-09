@@ -1,22 +1,26 @@
-import { retrieveBirthdaysFromDB } from "./retrieveBirthdaysFromDB.js";
-import { retrieveBirthdaysFromCSV } from "./retrieveBirthdaysFromCSV.js";
-import { addNewBirthdayFriendToDB } from "./addNewBirthdayFriendToDB.js";
-import { deleteBirthdayFriendFromDB } from "./deleteBirthdayFriendFromDB.js";
-import { retrieveBirthdaysWithinRangeFromDB } from "./retrieveBirthdaysWithinRangeFromDB.js";
-import { updateBirthdayFriendInDB } from "./updateBirthdayFriendInDB.js";
-import { sendGreeting } from "./sendGreeting.js";
+import { addNewBirthdayFriendToDB } from "./src/utils/addNewBirthdayFriendToDB.js";
+import { deleteBirthdayFriendFromDB } from "./src/utils/deleteBirthdayFriendFromDB.js";
+import { fetchFriendsWithBirthdayRange } from "./src/utils/fetchFriendsWithBirthdayRange.js";
+import { updateBirthdayFriendInDB } from "./src/utils/updateBirthdayFriendInDB.js";
+import { sendGreeting } from "./src/utils/sendGreeting.js";
+
+import { sequelize } from "./src/database/connection.js";
+import { addData } from "./bootstrap.js";
+
+import { fetchFriendsWithBirthday } from "./src/utils/fetchFriendsWithBirthday.js";
 
 import express from "express";
 
 const app = express();
 const port = 3000;
 app.use(express.json());
+//addData();
 
 app.get("/friends", async (req, res) => {
   const { startDate, endDate } = req.query;
   if (startDate && endDate) {
     // Get all friend objects that have a birthday within the specified range
-    retrieveBirthdaysWithinRangeFromDB(startDate, endDate)
+    fetchFriendsWithBirthdayRange(startDate, endDate)
       .then((friends) => {
         res.status(200).send(friends);
       })
@@ -25,7 +29,7 @@ app.get("/friends", async (req, res) => {
       });
   } else if (startDate) {
     // Get all friend objects that have a birthday on the specified date
-    retrieveBirthdaysFromDB(startDate)
+    fetchFriendsWithBirthday(startDate)
       .then((friends) => {
         res.status(200).send(friends);
       })
@@ -40,7 +44,7 @@ app.get("/friends", async (req, res) => {
 app.post("/friends/greetings", (req, res) => {
   // Send a greeting to all friends that have a birthday on the specified date
   const { date, service } = req.body;
-  retrieveBirthdaysFromDB(date)
+  fetchFriendsWithBirthday(date)
     .then((friends) => {
       sendGreeting(friends, service)
         .then((result) => {
@@ -67,7 +71,7 @@ app.post("/friends/friend", (req, res) => {
     });
 });
 
-app.delete("/friends/friend/:email", (req, res) => {
+app.delete("/friends/:email", (req, res) => {
   // Delete a friend from the database
   const email = params.email;
   deleteBirthdayFriendFromDB(email)
@@ -79,7 +83,7 @@ app.delete("/friends/friend/:email", (req, res) => {
     });
 });
 
-app.patch("/friend/update-friend/:email", (req, res) => {
+app.patch("/friend/:email", (req, res) => {
   // Update a friend's information in the database
   const { lastName, firstName, dateOfBirth, email } = req.body;
   const searchEmail = req.params.email;

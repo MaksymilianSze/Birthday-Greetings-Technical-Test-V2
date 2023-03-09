@@ -4,6 +4,9 @@ import { convertDate } from "./convertDate.js";
 const twentyEighth = "28";
 const feb = "02";
 
+/**
+ * @deprecated Use the verison with Sequelize instead
+ */
 export async function retrieveBirthdaysWithinRangeFromDB(startDate, endDate) {
   try {
     // Validate the input

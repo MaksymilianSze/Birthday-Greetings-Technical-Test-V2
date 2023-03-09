@@ -5,6 +5,9 @@ const dateFormat = /^\d{4}\/\d{2}\/\d{2}$/;
 const leap = "02/29";
 const twentyEighth = "02/28";
 
+/**
+ * @deprecated Use the verison with database instead
+ */
 export function retrieveBirthdaysFromCSV(date) {
   date = convertDate(date); // Convert the date to the correct format
 
