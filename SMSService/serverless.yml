@@ -1,0 +1,21 @@
+service: SMSService
+frameworkVersion: '3'
+
+provider:
+  name: aws
+  runtime: nodejs16.x
+  region: eu-west-2
+
+functions:
+  hello:  
+    handler: src/hello.hello
+    events:
+      - httpApi:
+          path: /hello
+          method: get
+  sendSMS:
+    handler: src/sendSMS.sendSMS
+    events:
+      - httpApi:
+          path: /sms
+          method: post
