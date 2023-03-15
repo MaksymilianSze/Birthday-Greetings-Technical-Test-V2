@@ -1,21 +1,45 @@
 service: SMSService
-frameworkVersion: '3'
+frameworkVersion: "3"
 
 provider:
   name: aws
   runtime: nodejs16.x
   region: eu-west-2
+  iamRoleStatements:
+    - Effect: Allow
+      Action:
+        - sqs:*
+        - sns:Publish
+      Resource: "*"
 
 functions:
-  hello:  
+  hello:
     handler: src/hello.hello
     events:
       - httpApi:
           path: /hello
           method: get
+      - sqs:
+          arn: arn:aws:sqs:eu-west-2:533322355632:SMSService-Queue
+          batchSize: 1
   sendSMS:
     handler: src/sendSMS.sendSMS
+    environment:
+      SQS_QUEUE_URL: ${file(env.json):SQS_QUEUE_URL}
     events:
       - httpApi:
           path: /sms
           method: post
+
+resources:
+  Resources:
+    MyQueue:
+      Type: "AWS::SQS::Queue"
+      Properties:
+        QueueName: "SMSService-Queue"
+
+    SNSTopic:
+      Type: "AWS::SNS::Topic"
+      Properties:
+        DisplayName: "SMSService-Topic"
+        TopicName: "SMSService-Topic"

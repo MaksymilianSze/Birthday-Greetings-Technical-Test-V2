@@ -1,54 +1,77 @@
-import AWS from 'aws-sdk';
+import AWS from "aws-sdk";
+import logger from "./logger.js";
 
-const sqs = new AWS.SQS({ region: "eu-west-2" });
-const sns = new AWS.SNS({ region: "eu-west-2" });
+const sns = new AWS.SNS();
 
 export const hello = async (event) => {
   try {
-    const params = {
-      QueueUrl: process.env.SQS_QUEUE_URL,
-      MaxNumberOfMessages: 5,
-      WaitTimeSeconds: 4, //test
-    };
+    const messages = event.Records;
 
-    const { Messages } = await sqs.receiveMessage(params).promise();
+    logger.info({
+      msg: "Received messages from SQS queue",
+      messages: messages,
+    });
 
-    console.log(Messages);
-    
-    if (!Messages || Messages.length === 0) {
+    if (!messages || messages.length === 0) {
       return {
-        statusCode: 200,
-        body: JSON.stringify({ message: 'No messages in queue' }),
+        statusCode: 404,
+        body: JSON.stringify({
+          status: "success",
+          data: {
+            phoneNumber,
+            message,
+          },
+          message: "Couldn't find any messages in the queue",
+        }),
       };
     }
 
-    const { phoneNumber, message } = JSON.parse(Messages[0].Body);
+    const body = JSON.parse(messages[0].body);
+
+    logger.info({ msg: "Parsed the message body", body: body });
+
+    const { phoneNumber, message } = body;
+
+    logger.info({
+      msg: "Deconstructed phone number and message",
+      body: { phoneNumber: phoneNumber, message: message },
+    });
 
     const snsParams = {
       PhoneNumber: phoneNumber,
       Message: message,
     };
 
-
+    logger.info("Publishing SMS...");
     await sns.publish(snsParams).promise();
-
-    await sqs.deleteMessage({
-      QueueUrl: process.env.SQS_QUEUE_URL,
-      ReceiptHandle: Messages[0].ReceiptHandle,
-    }).promise();
+    logger.info("SMS published successfully");
 
     return {
       statusCode: 200,
       body: JSON.stringify({
-        message: 'SMS sent',
-        input: { phoneNumber, message },
+        status: "success",
+        data: {
+          phoneNumber,
+          message,
+        },
+        message: "SMS sent",
       }),
     };
   } catch (error) {
-    console.error(error);
+    logger.error({
+      msg: "Error sending SMS",
+      error: error,
+    });
     return {
       statusCode: 500,
-      body: JSON.stringify({ message: 'Internal server error' }),
+      body: JSON.stringify({
+        status: "error",
+        data: {
+          phoneNumber,
+          message,
+        },
+        message: "Error sending SMS",
+      }),
     };
   }
 };
