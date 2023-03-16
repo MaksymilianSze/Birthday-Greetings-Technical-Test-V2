@@ -14,7 +14,7 @@ provider:
 
 functions:
   hello:
-    handler: src/hello.hello
+    handler: src/lambdas/hello/hello.hello
     events:
       - httpApi:
           path: /hello
@@ -23,7 +23,7 @@ functions:
           arn: arn:aws:sqs:eu-west-2:533322355632:SMSService-Queue
           batchSize: 1
   sendSMS:
-    handler: src/sendSMS.sendSMS
+    handler: src/lambdas/sendSMS/sendSMS.sendSMS
     environment:
       SQS_QUEUE_URL: ${file(env.json):SQS_QUEUE_URL}
     events:

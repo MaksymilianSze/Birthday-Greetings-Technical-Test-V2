@@ -1,5 +1,5 @@
 import AWS from "aws-sdk";
-import logger from "./logger.js";
+import logger from "../../logger.js";
 
 const sns = new AWS.SNS();
 
@@ -16,7 +16,7 @@ export const hello = async (event) => {
       return {
         statusCode: 404,
         body: JSON.stringify({
-          status: "success",
+          status: "error",
           data: {
             phoneNumber,
             message,
@@ -30,7 +30,7 @@ export const hello = async (event) => {
 
     logger.info({ msg: "Parsed the message body", body: body });
 
-    const { phoneNumber, message } = body;
+    var { phoneNumber, message } = body; // Don't know how else to do this, const and let don't work because then I can't access it in my catch block return
 
     logger.info({
       msg: "Deconstructed phone number and message",

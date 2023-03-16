@@ -1,11 +1,11 @@
 import AWS from "aws-sdk";
-import logger from "./logger.js";
+import logger from "../../logger.js";
 
 const sqs = new AWS.SQS();
 
 export const sendSMS = async (event) => {
   try {
-    const { phoneNumber, message } = JSON.parse(event.body);
+    var { phoneNumber, message } = JSON.parse(event.body); // Don't know how else to do this, const and let don't work because then I can't access it in my catch block return
 
     // Check if message is longer than 1000 characters
     if (!message || message.length > 1000) {
