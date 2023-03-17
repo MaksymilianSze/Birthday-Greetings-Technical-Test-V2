@@ -55,7 +55,7 @@ describe("sendSMS", () => {
     expect(response.body).toContain("error");
   });
 
-  it.only("returns error 400 response if message is too long", async () => {
+  it("returns error 400 response if message is too long", async () => {
     const response = await sendSMS(invalidMessageEvent);
     expect(response.statusCode).toBe(400);
     expect(response.body).toBeDefined();

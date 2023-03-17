@@ -1,6 +1,6 @@
 export function handleError(statusCode, data, errorMessage) {
   return {
-    statusCode: statusCode,
+    statusCode: statusCode ?? 500,
     body: JSON.stringify({
       status: "error",
       data: data,
