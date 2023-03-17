@@ -18,7 +18,7 @@ class SNS {
 AWS.SQS = SQS;
 AWS.SNS = SNS;
 
-// This function is used to set whether the sendMessageMock/publishMessage should return a successful or failed promise for testig purposes
+// This function is used to set whether the sendMessageMock/publishMessage should return a successful or failed promise for testing purposes
 export function setMockResponse(success) {
   sendMessageMock.mockReset();
   publishMessageMock.mockReset();

@@ -12,7 +12,13 @@ export const sendSMS = async (event) => {
     var { phoneNumber, message } = JSON.parse(event.body); // Don't know how else to do this, const and let don't work because then I can't access it in my catch block return
 
     // Check if message is longer than 1000 characters
-    checkMessage(message, logger);
+    if (!message || message.length > 1000) {
+      return handleError(
+        400,
+        { phoneNumber, message },
+        "Message is required and must be no longer than 1000 characters"
+      );
+    }
 
     // Check if phone number is a valid UK phone number
     if (!phoneNumber || !phoneRegex.test(phoneNumber)) {
