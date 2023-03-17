@@ -1,43 +1,26 @@
 import AWS from "aws-sdk";
-import logger from "../../logger.js";
+import logger from "../utils/logger.js";
+import { handleError } from "../utils/errorHandler.js";
+import { checkMessage } from "../utils/checkMessage.js";
 
 const sqs = new AWS.SQS();
+
+const phoneRegex = /^(\+44|0)7\d{9}$/; // Change this
 
 export const sendSMS = async (event) => {
   try {
     var { phoneNumber, message } = JSON.parse(event.body); // Don't know how else to do this, const and let don't work because then I can't access it in my catch block return
 
     // Check if message is longer than 1000 characters
-    if (!message || message.length > 1000) {
-      return {
-        statusCode: 400,
-        body: JSON.stringify({
-          status: "error",
-          data: {
-            phoneNumber,
-            message,
-          },
-          message:
-            "Message is required and must be no longer than 1000 characters",
-        }),
-      };
-    }
+    checkMessage(message, logger);
 
     // Check if phone number is a valid UK phone number
-    const phoneRegex = /^(\+44|0)7\d{9}$/;
     if (!phoneNumber || !phoneRegex.test(phoneNumber)) {
-      return {
-        statusCode: 400,
-        body: JSON.stringify({
-          status: "error",
-          data: {
-            phoneNumber,
-            message,
-          },
-          message:
-            "Phone number is required and must be a valid UK phone number",
-        }),
-      };
+      return handleError(
+        400,
+        { phoneNumber, message },
+        "Phone number is required and must be a valid UK phone number"
+      );
     }
 
     const params = {
@@ -62,7 +45,7 @@ export const sendSMS = async (event) => {
           phoneNumber,
           message,
         },
-        message: "SMS request successfully sent to SQS queue",
+        errorMessage: "SMS request successfully sent to SQS queue",
       }),
     };
   } catch (error) {
@@ -78,7 +61,7 @@ export const sendSMS = async (event) => {
           phoneNumber,
           message,
         },
-        message: "Error sending SMS request to SQS queue",
+        errorMessage: "Error sending SMS request to SQS queue",
       }),
     };
   }

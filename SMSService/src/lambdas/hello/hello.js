@@ -1,5 +1,5 @@
 import AWS from "aws-sdk";
-import logger from "../../logger.js";
+import logger from "../utils/logger.js";
 
 const sns = new AWS.SNS();
 
