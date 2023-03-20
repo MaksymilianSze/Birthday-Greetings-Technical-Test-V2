@@ -1,4 +1,4 @@
-import { handleError } from "../../utils/errorHandler";
+import { handleError } from "../../utils/handleError.js";
 
 export async function sendMessage(sqs, params, logger) {
   logger.info({

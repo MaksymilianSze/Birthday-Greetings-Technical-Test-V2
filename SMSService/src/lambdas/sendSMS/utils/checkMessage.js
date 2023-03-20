@@ -1,4 +1,4 @@
-import { handleError } from "../../utils/errorHandler.js";
+import { handleError } from "../../utils/handleError.js";
 
 export function checkMessage(message, logger) {
   // Check if message is longer than 1000 characters

@@ -1,7 +1,7 @@
 import AWS from "aws-sdk";
 import logger from "../utils/logger.js";
 import { checkQueueMessage } from "./utils/checkQueueMessage.js";
-import { handleError } from "../utils/errorHandler.js";
+import { handleError } from "../utils/handleError.js";
 import { publishMessage } from "./utils/publishMessage.js";
 
 const sns = new AWS.SNS();

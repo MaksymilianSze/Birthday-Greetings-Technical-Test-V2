@@ -1,6 +1,6 @@
 import AWS from "aws-sdk";
 import logger from "../utils/logger.js";
-import { handleError } from "../utils/errorHandler.js";
+import { handleError } from "../utils/handleError.js";
 import { checkMessage } from "./utils/checkMessage.js";
 import { checkPhoneNumber } from "./utils/checkPhoneNumber.js";
 import { sendMessage } from "./utils/sendMessage.js";
