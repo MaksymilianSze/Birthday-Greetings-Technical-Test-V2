@@ -21,7 +21,7 @@ export const hello = async (event) => {
 
     logger.info({ msg: "Parsed the message body", body: body });
 
-    var { phoneNumber, message } = body; // Don't know how else to do this, const and let don't work because then I can't access it in my catch block return
+    const { phoneNumber, message } = body;
 
     logger.info({
       msg: "Deconstructed phone number and message",
