@@ -22,12 +22,12 @@ const noMessageEvent = {
   Records: [],
 };
 
-describe.skip("hello", () => {
+describe("hello", () => {
   // Create a mock function for publishMessage
   const publishMessageMock = jest.fn();
 
   // Mock the SNS object to use the publishMessageMock
-  AWS.SQS.prototype.publishMessage = publishMessageMock;
+  AWS.SNS.prototype.publishMessage = publishMessageMock;
 
   afterEach(() => {
     jest.resetAllMocks();
@@ -51,6 +51,7 @@ describe.skip("hello", () => {
     expect(response.statusCode).toBe(500);
     expect(response.body).toBeDefined();
     expect(response.body).toContain("error");
+    expect(response.body).toContain("There is an issue with the SNS");
   });
 
   it("returns error 404 response if there are no messages in the queue", async () => {

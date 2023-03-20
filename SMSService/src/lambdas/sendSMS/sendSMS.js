@@ -1,8 +1,9 @@
 import AWS from "aws-sdk";
 import logger from "../utils/logger.js";
 import { handleError } from "../utils/errorHandler.js";
-import { checkMessage } from "../utils/checkMessage.js";
-import { checkPhoneNumber } from "../utils/checkPhoneNumber.js";
+import { checkMessage } from "./utils/checkMessage.js";
+import { checkPhoneNumber } from "./utils/checkPhoneNumber.js";
+import { sendMessage } from "./utils/sendMessage.js";
 
 const sqs = new AWS.SQS();
 
@@ -21,14 +22,7 @@ export const sendSMS = async (event) => {
       QueueUrl: process.env.SQS_QUEUE_URL,
     };
 
-    logger.info({
-      msg: "Sending SMS request to SQS queue",
-      SMSParams: params,
-    });
-
-    await sqs.sendMessage(params).promise();
-
-    logger.info("SMS request successfully sent to SQS queue");
+    await sendMessage(sqs, params, logger);
 
     return {
       statusCode: 200,
@@ -46,6 +40,10 @@ export const sendSMS = async (event) => {
       msg: "Error sending SMS request to SQS queue",
       error: error,
     });
-    return error;
+    // Not the best way to do this, but I don't know how else to do it
+    if (error.statusCode) {
+      return error;
+    }
+    return handleError();
   }
 };

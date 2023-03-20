@@ -1,5 +1,8 @@
 import AWS from "aws-sdk";
 import logger from "../utils/logger.js";
+import { checkQueueMessage } from "./utils/checkQueueMessage.js";
+import { handleError } from "../utils/errorHandler.js";
+import { publishMessage } from "./utils/publishMessage.js";
 
 const sns = new AWS.SNS();
 
@@ -12,19 +15,7 @@ export const hello = async (event) => {
       messages: messages,
     });
 
-    if (!messages || messages.length === 0) {
-      return {
-        statusCode: 404,
-        body: JSON.stringify({
-          status: "error",
-          data: {
-            phoneNumber,
-            message,
-          },
-          message: "Couldn't find any messages in the queue",
-        }),
-      };
-    }
+    checkQueueMessage(messages, logger);
 
     const body = JSON.parse(messages[0].body);
 
@@ -42,8 +33,14 @@ export const hello = async (event) => {
       Message: message,
     };
 
+    //await publishMessage(sns, snsParams, logger);
     logger.info("Publishing SMS...");
-    await sns.publish(snsParams).promise();
+    await sns
+      .publish(snsParams)
+      .promise()
+      .catch(() => {
+        throw handleError(500, {}, "There is an issue with the SNS");
+      }); // When I try to refactor this it breaks for some reason
     logger.info("SMS published successfully");
 
     return {
@@ -62,16 +59,10 @@ export const hello = async (event) => {
       msg: "Error sending SMS",
       error: error,
     });
-    return {
-      statusCode: 500,
-      body: JSON.stringify({
-        status: "error",
-        data: {
-          phoneNumber,
-          message,
-        },
-        message: "Error sending SMS",
-      }),
-    };
+    // Not the best way to do this, but I don't know how else to do it
+    if (error.statusCode) {
+      return error;
+    }
+    return handleError();
   }
 };

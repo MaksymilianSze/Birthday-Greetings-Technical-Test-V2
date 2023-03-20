@@ -1,4 +1,4 @@
-import { handleError } from "./errorHandler.js";
+import { handleError } from "../../utils/errorHandler.js";
 
 const phoneRegex = /^(\+44|0)7\d{9}$/; // Change this
 

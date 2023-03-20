@@ -45,7 +45,6 @@ describe("sendSMS", () => {
   });
 
   it("returns error 500 response if there is an issue with the SQS", async () => {
-    // Set the sendMessageMock to return a successful promise
     setMockResponse(false);
     sendMessageMock.mockReturnValueOnce();
 
@@ -53,6 +52,7 @@ describe("sendSMS", () => {
     expect(response.statusCode).toBe(500);
     expect(response.body).toBeDefined();
     expect(response.body).toContain("error");
+    expect(response.body).toContain("There is an issue with the SQS queue");
   });
 
   it("returns error 400 response if message is too long", async () => {

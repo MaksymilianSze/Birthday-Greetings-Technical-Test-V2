@@ -3,8 +3,8 @@ export function handleError(statusCode, data, errorMessage) {
     statusCode: statusCode ?? 500,
     body: JSON.stringify({
       status: "error",
-      data: data,
-      errorMessage: errorMessage,
+      data: data ?? {},
+      errorMessage: errorMessage ?? "Internal Server Error",
     }),
   };
 }
