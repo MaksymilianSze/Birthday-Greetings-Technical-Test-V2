@@ -26,9 +26,6 @@ describe("sendSMS", () => {
   // Create a mock function for sendMessage
   const sendMessageMock = jest.fn();
 
-  // Mock the SQS object to use the sendMessageMock
-  AWS.SQS.prototype.sendMessage = sendMessageMock;
-
   afterEach(() => {
     jest.resetAllMocks();
   });

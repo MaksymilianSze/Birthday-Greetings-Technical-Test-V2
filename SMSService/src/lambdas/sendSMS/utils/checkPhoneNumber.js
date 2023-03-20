@@ -1,6 +1,6 @@
 import { handleError } from "../../utils/handleError.js";
 
-const phoneRegex = /^(\+44|0)7\d{9}$/; // Change this
+const phoneRegex = /^\+447\d{9}$/;
 
 export function checkPhoneNumber(phoneNumber, logger) {
   logger.info("Checking phone number...");
