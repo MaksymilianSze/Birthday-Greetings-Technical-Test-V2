@@ -8,6 +8,6 @@ export async function publishMessage(sns, snsParams, logger) {
     .catch(() => {
       throw handleError(500, {}, "There is an issue with the SNS");
     });
-  logger.info("SMS published successfully");
+  logger.info({ message: "SMS published successfully", snsParams: snsParams });
   return;
 }

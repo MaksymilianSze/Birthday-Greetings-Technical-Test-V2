@@ -10,6 +10,6 @@ export function checkMessage(message, logger) {
       "Message is required and must be no longer than 1000 characters"
     );
   }
-  logger.info("Message is valid");
+  logger.info({ message: "Message is valid", message: message });
   return;
 }

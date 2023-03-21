@@ -5,6 +5,6 @@ export function checkQueueMessage(messages, logger) {
   if (!messages || Object.keys(messages).length === 0) {
     throw handleError(404, {}, "Couldn't find any messages in the queue");
   }
-  logger.info("Message queue found");
+  logger.info({ message: "Message in queue found", messages: messages });
   return;
 }

@@ -13,6 +13,9 @@ export async function sendMessage(sqs, params, logger) {
       throw handleError(500, {}, "There is an issue with the SQS queue");
     });
 
-  logger.info("SMS request successfully sent to SQS queue");
+  logger.info({
+    message: "SMS request successfully sent to SQS queue",
+    SMSParams: params,
+  });
   return;
 }

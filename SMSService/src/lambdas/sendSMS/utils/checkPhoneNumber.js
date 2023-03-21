@@ -11,6 +11,6 @@ export function checkPhoneNumber(phoneNumber, logger) {
       "Phone number is required and must be a valid UK phone number"
     );
   }
-  logger.info("Message is valid");
+  logger.info({ message: "Phone number is valid", phoneNumber: phoneNumber });
   return;
 }

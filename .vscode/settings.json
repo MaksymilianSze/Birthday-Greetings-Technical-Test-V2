@@ -1,6 +1,5 @@
 {
-    "yaml.schemas": {
-        "file:///Users/maksymilianszejko/.vscode/extensions/docsmsft.docs-yaml-0.2.9/out/yaml-support/toc.schema.json": "/toc\\.yml/i",
-        "https://raw.githubusercontent.com/lalcebo/json-schema/master/serverless/reference.json": "file:///Users/maksymilianszejko/Documents/GitHub/Birthday-Greetings-Technical-Test-V2/SMSService/serverless.yml"
-    }
+  "yaml.schemas": {
+    "https://raw.githubusercontent.com/lalcebo/json-schema/master/serverless/reference.json": "file:///Users/maksymilianszejko/Documents/GitHub/Birthday-Greetings-Technical-Test-V2/SMSService/serverless.yml"
+  }
 }

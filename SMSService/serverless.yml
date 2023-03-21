@@ -1,6 +1,9 @@
 service: SMSService
 frameworkVersion: "3"
 
+custom:
+  ACCOUNT_ID: 533322355632
+
 provider:
   name: aws
   runtime: nodejs16.x
@@ -11,16 +14,17 @@ provider:
         - sqs:*
         - sns:Publish
       Resource: "*"
+  environment:
+    SQS_QUEUE_URL: https://sqs.${self:provider.region}.amazonaws.com/${self:custom.ACCOUNT_ID}/SMSService-Queue
+    REGION: ${self:provider.region}
+    SQS_QUEUE_ARN: arn:aws
 
 functions:
   hello:
     handler: src/lambdas/hello/hello.hello
     events:
-      - httpApi:
-          path: /hello
-          method: get
       - sqs:
-          arn: arn:aws:sqs:eu-west-2:533322355632:SMSService-Queue
+          arn: ${self:provider.environment.SQS_QUEUE_ARN}:sqs:${self:provider.region}:${self:custom.ACCOUNT_ID}:SMSService-Queue
           batchSize: 1
   sendSMS:
     handler: src/lambdas/sendSMS/sendSMS.sendSMS
