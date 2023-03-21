@@ -1,0 +1,49 @@
+service: SMSService
+frameworkVersion: "3"
+
+custom:
+  ACCOUNT_ID: 533322355632
+
+provider:
+  name: aws
+  runtime: nodejs16.x
+  region: eu-west-2
+  iamRoleStatements:
+    - Effect: Allow
+      Action:
+        - sqs:*
+        - sns:Publish
+      Resource: "*"
+  environment:
+    SQS_QUEUE_URL: https://sqs.${self:provider.region}.amazonaws.com/${self:custom.ACCOUNT_ID}/SMSService-Queue
+    REGION: ${self:provider.region}
+    SQS_QUEUE_ARN: arn:aws
+
+functions:
+  hello:
+    handler: src/lambdas/hello/hello.hello
+    events:
+      - sqs:
+          arn: ${self:provider.environment.SQS_QUEUE_ARN}:sqs:${self:provider.region}:${self:custom.ACCOUNT_ID}:SMSService-Queue
+          batchSize: 1
+  sendSMS:
+    handler: src/lambdas/sendSMS/sendSMS.sendSMS
+    environment:
+      SQS_QUEUE_URL: ${file(env.json):SQS_QUEUE_URL}
+    events:
+      - httpApi:
+          path: /sms
+          method: post
+
+resources:
+  Resources:
+    MyQueue:
+      Type: "AWS::SQS::Queue"
+      Properties:
+        QueueName: "SMSService-Queue"
+
+    SNSTopic:
+      Type: "AWS::SNS::Topic"
+      Properties:
+        DisplayName: "SMSService-Topic"
+        TopicName: "SMSService-Topic"
