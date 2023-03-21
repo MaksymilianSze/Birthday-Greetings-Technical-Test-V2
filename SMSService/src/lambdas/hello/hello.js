@@ -33,15 +33,7 @@ export const hello = async (event) => {
       Message: message,
     };
 
-    //await publishMessage(sns, snsParams, logger);
-    logger.info("Publishing SMS...");
-    await sns
-      .publish(snsParams)
-      .promise()
-      .catch(() => {
-        throw handleError(500, {}, "There is an issue with the SNS");
-      }); // When I try to refactor this it breaks for some reason
-    logger.info("SMS published successfully");
+    await publishMessage(sns, snsParams, logger);
 
     return {
       statusCode: 200,

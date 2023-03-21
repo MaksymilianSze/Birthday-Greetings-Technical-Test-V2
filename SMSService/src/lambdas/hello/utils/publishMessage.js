@@ -1,6 +1,6 @@
 import { handleError } from "../../utils/handleError.js";
 
-export async function sendMessage(sns, snsParams, logger) {
+export async function publishMessage(sns, snsParams, logger) {
   logger.info("Publishing SMS...");
   await sns
     .publish(snsParams)
